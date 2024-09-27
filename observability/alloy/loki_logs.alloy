@@ -1,0 +1,30 @@
+discovery.kubernetes "pod" {
+  role = "pod"
+  namespaces {
+    // names = ["names", "of", "namespaces"]
+  }
+  selectors {
+    // role = "pod"
+    // label = "app=example-app" 
+  }
+}
+
+loki.write "grafanacloud" {
+  endpoint {
+    // url = "https://logs.url.net/loki/api/v1/push"
+
+    basic_auth {
+      // username = env("LOKI_WRITE_USERNAME")
+      // password = env("LOKI_WRITE_PASSWORD")
+    }
+  }
+}
+
+loki.source.kubernetes "pod_logs" {
+  targets    = discovery.relabel.pod_logs.output
+  forward_to = [loki.process.pod_logs.receiver]
+}
+
+loki.process "pod_logs" {
+  forward_to = [loki.write.grafanacloud.receiver]
+}

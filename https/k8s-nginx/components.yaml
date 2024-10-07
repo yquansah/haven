@@ -1,0 +1,129 @@
+# This file contains the configuration on how to expose the echoserver outside of the cluster
+# It uses an Nginx server running as a Deployment, with a Service that exposes the Nginx server on a NodePort
+# The Nginx server is configured with a ConfigMap that contains the Nginx configuration
+# The echoserver is a simple echo server that is used to test the Nginx server
+
+# You have to remember to create the secret with the TLS certificate and key in the same namespace as the Nginx server.
+# The secret has to be named tls-secret.
+# You can create the secret with the following command:
+# kubectl create secret tls tls-secret --key "path/to/your-key.pem" --cert "path/to/your-cert.pem" -n default
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: default
+  name: nginx-config
+data:
+  nginx.conf: |
+    events {
+      worker_connections 1024;
+    }
+
+    http {
+      server {
+        listen 443 ssl;
+        server_name 1.grasshopper.dev-hyperbolic.xyz;
+
+        ssl_certificate /etc/nginx/certs/tls.crt;
+        ssl_certificate_key /etc/nginx/certs/tls.key;
+
+        location / {
+            proxy_pass http://echoserver.default.svc.cluster.local;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+      }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 443
+          volumeMounts:
+            - name: certs
+              mountPath: /etc/nginx/certs
+              readOnly: true
+            - name: nginx-config-volume
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+      volumes:
+        - name: certs
+          secret:
+            secretName: tls-secret
+        - name: nginx-config-volume
+          configMap:
+            name: nginx-config
+            items:
+              - key: nginx.conf
+                path: nginx.conf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-deployment
+  namespace: default
+spec:
+  ports:
+    - port: 443
+      targetPort: 443
+      nodePort: 443
+      protocol: TCP
+  type: NodePort
+  selector:
+    app: nginx
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echoserver
+  namespace: default
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: echoserver
+  template:
+    metadata:
+      labels:
+        app: echoserver
+    spec:
+      containers:
+        - image: ealen/echo-server:latest
+          imagePullPolicy: IfNotPresent
+          name: echoserver
+          ports:
+            - containerPort: 80
+          env:
+            - name: PORT
+              value: "80"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: echoserver
+  namespace: default
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+  type: ClusterIP
+  selector:
+    app: echoserver

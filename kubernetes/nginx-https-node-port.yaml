@@ -21,7 +21,7 @@ data:
     http {
       server {
         listen 443 ssl;
-        server_name 1.grasshopper.dev-hyperbolic.xyz;
+        server_name example.com;
 
         ssl_certificate /etc/nginx/certs/tls.crt;
         ssl_certificate_key /etc/nginx/certs/tls.key;

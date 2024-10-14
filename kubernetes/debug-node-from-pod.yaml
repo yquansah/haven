@@ -1,0 +1,29 @@
+# This file contains the configuration on how to debug a node from a pod
+# It uses a pod that runs a shell and has access to the host filesystem
+# The pod is scheduled on the node that you want to debug
+# The pod will run a shell and you can use it to debug the node
+
+# It also mounts the host filesystem on the pod, so you can access the node filesystem
+# Specifically, it mounts /var/log on the node, so you can check the logs
+# But you can mount other directories if you want to check other things
+apiVersion: v1
+kind: Pod
+metadata:
+  name: debug-pod
+spec:
+  containers:
+    - name: debug-container
+      image: busybox
+      command:
+        - sh
+        - -c
+        - "sleep 3600"
+      volumeMounts:
+        - name: host-filesystem
+          mountPath: /var/log
+  nodeName: some-node
+  volumes:
+    - name: host-filesystem
+      hostPath:
+        path: /var/log
+        type: Directory

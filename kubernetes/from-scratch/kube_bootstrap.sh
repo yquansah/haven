@@ -207,7 +207,15 @@ main() {
   # Create kube-scheduler configuration
   create_scheduler_config
 
+  # Export KUBECONFIG environment variable
+  if [[ -n "${KUBECONFIG}" ]]; then
+    export KUBECONFIG="${KUBECONFIG}:${KUBECONFIG_DIRECTORY}/kubeconfig"
+  else
+    export KUBECONFIG="${KUBECONFIG_DIRECTORY}/kubeconfig"
+  fi
+
   log "Certificate generation and kubeconfig setup completed successfully"
+  log "KUBECONFIG exported: ${KUBECONFIG}"
 }
 
 # Execute main function

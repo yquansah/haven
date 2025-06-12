@@ -1,0 +1,28 @@
+---
+- name: Run kubeadm-init.sh on all kube nodes
+  hosts: kube-nodes
+  become: yes
+  gather_facts: yes
+  
+  tasks:
+    - name: Copy kubeadm-init.sh script to target hosts
+      copy:
+        src: ../kubeadm-init.sh
+        dest: /tmp/kubeadm-init.sh
+        mode: '0755'
+        owner: root
+        group: root
+    
+    - name: Execute kubeadm-init.sh script
+      shell: /tmp/kubeadm-init.sh
+      register: kubeadm_output
+      changed_when: true
+    
+    - name: Display kubeadm script output
+      debug:
+        var: kubeadm_output.stdout_lines
+    
+    - name: Clean up script file
+      file:
+        path: /tmp/kubeadm-init.sh
+        state: absent

@@ -2,6 +2,23 @@
 set -euxo pipefail
 # This script needs to be ran as root
 
+# Detect system architecture
+ARCH=$(uname -m)
+case $ARCH in
+  x86_64)
+    CNI_ARCH="amd64"
+    ;;
+  aarch64)
+    CNI_ARCH="arm64"
+    ;;
+  *)
+    echo "Unsupported architecture: $ARCH"
+    exit 1
+    ;;
+esac
+
+echo "Detected architecture: $ARCH (using CNI arch: $CNI_ARCH)"
+
 # Kubernetes Variable Declaration
 KUBERNETES_VERSION="v1.30"
 CRIO_VERSION="v1.30"
@@ -65,9 +82,9 @@ curl -fsSL https://pkgs.k8s.io/core:/stable:/$KUBERNETES_VERSION/deb/Release.key
 echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/$KUBERNETES_VERSION/deb/ /" |
   tee /etc/apt/sources.list.d/kubernetes.list
 
-curl -LO https://github.com/containernetworking/plugins/releases/download/v1.6.2/cni-plugins-linux-arm64-v1.6.2.tgz
+curl -LO https://github.com/containernetworking/plugins/releases/download/v1.6.2/cni-plugins-linux-${CNI_ARCH}-v1.6.2.tgz
 mkdir -p /opt/cni/bin
-tar Cxzvf /opt/cni/bin cni-plugins-linux-arm64-v1.6.2.tgz
+tar Cxzvf /opt/cni/bin cni-plugins-linux-${CNI_ARCH}-v1.6.2.tgz
 
 apt-get update -y
 apt-get install -y kubelet="$KUBERNETES_INSTALL_VERSION" kubectl="$KUBERNETES_INSTALL_VERSION" kubeadm="$KUBERNETES_INSTALL_VERSION"

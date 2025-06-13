@@ -11,23 +11,10 @@ spec:
         [
           "/bin/sh",
           "-c",
-          "while true; do iperf3 -c <TARGET_IP> -t 30; sleep 5; done",
+          "while true; do iperf3 -c iperf3-server.default.svc.cluster.local -t 30; sleep 5; done",
         ]
       resources:
         requests:
           cpu: "200m"
         limits:
           cpu: "500m"
----
-# iperf3 server
-apiVersion: v1
-kind: Pod
-metadata:
-  name: iperf3-server
-spec:
-  containers:
-    - name: iperf3
-      image: networkstatic/iperf3
-      args: ["-s"]
-      ports:
-        - containerPort: 5201

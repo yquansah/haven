@@ -1,9 +1,9 @@
+# This will only work on amd64 architectures
 apiVersion: v1
 kind: Pod
 metadata:
   name: memory-pressure
 spec:
-  nodeName: raspberrypi-dos
   containers:
     - name: stress-memory
       image: polinux/stress

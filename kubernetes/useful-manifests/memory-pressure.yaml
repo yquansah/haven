@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: memory-pressure
+spec:
+  nodeName: raspberrypi-dos
+  containers:
+    - name: stress-memory
+      image: polinux/stress
+      args:
+        - "--vm"
+        - "2"
+        - "--vm-bytes"
+        - "128M"
+        - "--vm-hang"
+        - "0"

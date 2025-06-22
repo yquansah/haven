@@ -28,3 +28,8 @@ override.tf.json
 
 # Ignore terraform locks
 .terraform.lock.hcl
+
+
+
+# Alloy files
+*.alloy

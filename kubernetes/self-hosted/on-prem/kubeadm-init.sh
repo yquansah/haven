@@ -54,14 +54,10 @@ EOF
 sysctl --system
 
 apt-get update -y
-apt-get install -y apt-transport-https ca-certificates curl gpg
-
-# Install CRI-O Runtime
-apt-get update -y
-apt-get install -y software-properties-common curl apt-transport-https ca-certificates
+apt-get install -y software-properties-common curl apt-transport-https ca-certificates gpg
 
 curl -fsSL https://pkgs.k8s.io/addons:/cri-o:/stable:/$CRIO_VERSION/deb/Release.key |
-  gpg --dearmor -o /etc/apt/keyrings/cri-o-apt-keyring.gpg
+  gpg --batch --yes --dearmor -o /etc/apt/keyrings/cri-o-apt-keyring.gpg
 
 echo "deb [signed-by=/etc/apt/keyrings/cri-o-apt-keyring.gpg] https://pkgs.k8s.io/addons:/cri-o:/stable:/$CRIO_VERSION/deb/ /" |
   tee /etc/apt/sources.list.d/cri-o.list
@@ -77,19 +73,16 @@ echo "CRI runtime installed successfully"
 
 # Install kubelet, kubectl, and kubeadm
 curl -fsSL https://pkgs.k8s.io/core:/stable:/$KUBERNETES_VERSION/deb/Release.key |
-  gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  gpg --batch --yes --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 
 echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/$KUBERNETES_VERSION/deb/ /" |
   tee /etc/apt/sources.list.d/kubernetes.list
 
-curl -LO https://github.com/containernetworking/plugins/releases/download/v1.6.2/cni-plugins-linux-${CNI_ARCH}-v1.6.2.tgz
+curl -LO https://github.com/containernetworking/plugins/releases/download/v1.7.1/cni-plugins-linux-${CNI_ARCH}-v1.7.1.tgz
 mkdir -p /opt/cni/bin
-tar Cxzvf /opt/cni/bin cni-plugins-linux-${CNI_ARCH}-v1.6.2.tgz
+tar Cxzvf /opt/cni/bin cni-plugins-linux-${CNI_ARCH}-v1.7.1.tgz
 
 apt-get update -y
 apt-get install -y kubelet="$KUBERNETES_INSTALL_VERSION" kubectl="$KUBERNETES_INSTALL_VERSION" kubeadm="$KUBERNETES_INSTALL_VERSION"
-
-# Prevent automatic updates for kubelet, kubeadm, and kubectl
-apt-mark hold kubelet kubeadm kubectl
 
 kubeadm config images pull --cri-socket=/var/run/crio/crio.sock

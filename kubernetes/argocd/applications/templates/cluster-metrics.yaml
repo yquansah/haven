@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Values.clusterMetrics.name }}
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: k8s-monitoring
+    repoURL: https://grafana.github.io/helm-charts
+    targetRevision: {{ .Values.clusterMetrics.chartVersion }}
+    helm:
+      releaseName: {{ .Values.clusterMetrics.releaseName }}
+      valuesObject:
+        {{- .Values.clusterMetrics.values | toYaml | nindent 8 }}
+  destination:
+    name: in-cluster
+    namespace: {{ .Values.namespace }}
+  syncPolicy:
+    automated:
+      prune: true
+      allowEmpty: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PruneLast=true
+      - ApplyOutOfSyncOnly=true

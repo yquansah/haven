@@ -1,0 +1,39 @@
+clusterMetrics:
+  name: cluster-metrics
+  namespace: monitoring
+  chartVersion: 3.0.2
+  releaseName: cluster-metrics
+  values:
+    cluster:
+      name: yoofionprem-cluster
+    destinations:
+      - name: hosted_metrics
+        type: prometheus
+        url: "https://prometheus-prod-36-prod-us-west-0.grafana.net/api/prom/push"
+        auth:
+          type: basic
+          usernameKey: grafana-username
+          passwordKey: grafana-password
+        secret:
+          create: false
+          name: grafana-secrets
+          namespace: monitoring
+    clusterMetrics:
+      enabled: true
+      kube-state-metrics:
+        metricsTuning:
+          useDefaultAllowList: false
+      kubelet:
+        metricsTuning:
+          useDefaultAllowList: false
+      cadvisor:
+        metricsTuning:
+          useDefaultAllowList: false
+    alloy-metrics:
+      enabled: true
+  
+externalSecrets:
+  name: external-secrets
+  releaseName: external-secrets
+  namespace: external-secrets
+  chartVersion: 0.18.0

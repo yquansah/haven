@@ -20,7 +20,7 @@ example.org {
 }
 ```
 
-will forward queries for `example.org` to Google Public DNS, and the rest of the queries to `resolv.conf`.
+will forward queries for `example.org` to Google Public DNS, and the rest of the queries to `resolv.conf`. CoreDNS basically contacts the Kubernetes API server for the various IPs for pods and services, and caches that information for subsequent requests to reduce load on the Kubernetes API server.
 
 Every pod created in the Kubernetes cluster will get an `/etc/resolv.conf` that will forward DNS queries to a specific upstream server. The upstream server is a Virtual IP, which is intercepted by the Kernel via iptable rules and routed to the CoreDNS backend to retrieve answers for the DNS query.
 

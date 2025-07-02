@@ -5,6 +5,13 @@
 # In a production environment, you would opt for a solution like cert-manager to create the certificate for you from a trusted CA like letsencrypt.
 # The repo for the helm chart in dex actually walks you through an example of how to do this.
 
+# The arguments for the kube-apiserver for this will be:
+# --authorization-mode=RBAC \
+# --oidc-issuer-url= \
+# --oidc-username-claim= \
+# --oidc-ca-file= \
+# --oidc-client-id=
+
 # Check for required environment variables
 if [ -z "$OAUTH2_CLIENT_ID" ]; then
     echo "Error: OAUTH2_CLIENT_ID environment variable is not set"

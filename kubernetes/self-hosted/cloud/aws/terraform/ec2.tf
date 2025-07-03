@@ -3,22 +3,44 @@ resource "aws_security_group" "yke_worker_node_sg" {
   vpc_id = aws_vpc.yke_vpc.id
 }
 
-resource "aws_security_group_rule" "yke_worker_node_ingress_all_bgp" {
-  type              = "ingress"
-  security_group_id = aws_security_group.yke_worker_node_sg.id
-  cidr_blocks       = ["0.0.0.0/0"]
-  from_port         = 179
-  to_port           = 179
-  protocol          = "tcp"
+# Allow BGP traffic from control plane to worker nodes
+resource "aws_security_group_rule" "yke_worker_node_ingress_control_plane_bgp" {
+  type                     = "ingress"
+  security_group_id        = aws_security_group.yke_worker_node_sg.id
+  source_security_group_id = aws_security_group.yke_control_plane_sg.id
+  from_port                = 179
+  to_port                  = 179
+  protocol                 = "tcp"
 }
 
-resource "aws_security_group_rule" "yke_worker_node_ingress_all_ip_encapsulation" {
-  type              = "ingress"
-  security_group_id = aws_security_group.yke_worker_node_sg.id
-  cidr_blocks       = ["0.0.0.0/0"]
-  protocol          = 4
-  from_port         = 0
-  to_port           = 0
+# Allow BGP traffic from other worker nodes
+resource "aws_security_group_rule" "yke_worker_node_ingress_worker_bgp" {
+  type                     = "ingress"
+  security_group_id        = aws_security_group.yke_worker_node_sg.id
+  source_security_group_id = aws_security_group.yke_worker_node_sg.id
+  from_port                = 179
+  to_port                  = 179
+  protocol                 = "tcp"
+}
+
+# Allow IP encapsulation traffic from control plane to worker nodes
+resource "aws_security_group_rule" "yke_worker_node_ingress_control_plane_ip_encapsulation" {
+  type                     = "ingress"
+  security_group_id        = aws_security_group.yke_worker_node_sg.id
+  source_security_group_id = aws_security_group.yke_control_plane_sg.id
+  protocol                 = 4
+  from_port                = 0
+  to_port                  = 0
+}
+
+# Allow IP encapsulation traffic from other worker nodes
+resource "aws_security_group_rule" "yke_worker_node_ingress_worker_ip_encapsulation" {
+  type                     = "ingress"
+  security_group_id        = aws_security_group.yke_worker_node_sg.id
+  source_security_group_id = aws_security_group.yke_worker_node_sg.id
+  protocol                 = 4
+  from_port                = 0
+  to_port                  = 0
 }
 
 resource "aws_security_group_rule" "yke_worker_node_ingress_all_ssh" {
@@ -62,22 +84,44 @@ resource "aws_security_group" "yke_control_plane_sg" {
   vpc_id = aws_vpc.yke_vpc.id
 }
 
-resource "aws_security_group_rule" "yke_control_plane_ingress_all_bgp" {
-  type              = "ingress"
-  security_group_id = aws_security_group.yke_control_plane_sg.id
-  cidr_blocks       = ["0.0.0.0/0"]
-  from_port         = 179
-  to_port           = 179
-  protocol          = "tcp"
+# Allow BGP traffic from worker nodes to control plane
+resource "aws_security_group_rule" "yke_control_plane_ingress_worker_bgp" {
+  type                     = "ingress"
+  security_group_id        = aws_security_group.yke_control_plane_sg.id
+  source_security_group_id = aws_security_group.yke_worker_node_sg.id
+  from_port                = 179
+  to_port                  = 179
+  protocol                 = "tcp"
 }
 
-resource "aws_security_group_rule" "yke_control_plane_ingress_all_ip_encapsulation" {
-  type              = "ingress"
-  security_group_id = aws_security_group.yke_control_plane_sg.id
-  cidr_blocks       = ["0.0.0.0/0"]
-  protocol          = 4
-  from_port         = 0
-  to_port           = 0
+# Allow BGP traffic from other control plane nodes
+resource "aws_security_group_rule" "yke_control_plane_ingress_control_plane_bgp" {
+  type                     = "ingress"
+  security_group_id        = aws_security_group.yke_control_plane_sg.id
+  source_security_group_id = aws_security_group.yke_control_plane_sg.id
+  from_port                = 179
+  to_port                  = 179
+  protocol                 = "tcp"
+}
+
+# Allow IP encapsulation traffic from worker nodes to control plane
+resource "aws_security_group_rule" "yke_control_plane_ingress_worker_ip_encapsulation" {
+  type                     = "ingress"
+  security_group_id        = aws_security_group.yke_control_plane_sg.id
+  source_security_group_id = aws_security_group.yke_worker_node_sg.id
+  protocol                 = 4
+  from_port                = 0
+  to_port                  = 0
+}
+
+# Allow IP encapsulation traffic from other control plane nodes
+resource "aws_security_group_rule" "yke_control_plane_ingress_control_plane_ip_encapsulation" {
+  type                     = "ingress"
+  security_group_id        = aws_security_group.yke_control_plane_sg.id
+  source_security_group_id = aws_security_group.yke_control_plane_sg.id
+  protocol                 = 4
+  from_port                = 0
+  to_port                  = 0
 }
 
 resource "aws_security_group_rule" "yke_control_plane_ingress_all_ssh" {
@@ -181,8 +225,6 @@ resource "aws_instance" "yke_worker_node" {
   key_name = aws_key_pair.yke_key.key_name
 
   vpc_security_group_ids = [aws_security_group.yke_worker_node_sg.id]
-
-  user_data = file("scripts/init.yaml")
 
   tags = {
     Name      = "yke-worker-${count.index}"

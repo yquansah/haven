@@ -20,9 +20,8 @@ esac
 echo "Detected architecture: $ARCH (using CNI arch: $CNI_ARCH)"
 
 # Kubernetes Variable Declaration
-KUBERNETES_VERSION="v1.30"
-CRIO_VERSION="v1.30"
-KUBERNETES_INSTALL_VERSION="1.30.0-1.1"
+KUBERNETES_VERSION="v1.33"
+CRIO_VERSION="v1.33"
 
 # Disable swap
 swapoff -a
@@ -56,11 +55,11 @@ sysctl --system
 apt-get update -y
 apt-get install -y software-properties-common curl apt-transport-https ca-certificates gpg
 
-curl -fsSL https://pkgs.k8s.io/addons:/cri-o:/stable:/$CRIO_VERSION/deb/Release.key |
-  gpg --batch --yes --dearmor -o /etc/apt/keyrings/cri-o-apt-keyring.gpg
+curl -fsSL https://download.opensuse.org/repositories/isv:/cri-o:/stable:/$CRIO_VERSION/deb/Release.key |
+    gpg --batch --yes --dearmor -o /etc/apt/keyrings/cri-o-apt-keyring.gpg
 
-echo "deb [signed-by=/etc/apt/keyrings/cri-o-apt-keyring.gpg] https://pkgs.k8s.io/addons:/cri-o:/stable:/$CRIO_VERSION/deb/ /" |
-  tee /etc/apt/sources.list.d/cri-o.list
+echo "deb [signed-by=/etc/apt/keyrings/cri-o-apt-keyring.gpg] https://download.opensuse.org/repositories/isv:/cri-o:/stable:/$CRIO_VERSION/deb/ /" |
+    tee /etc/apt/sources.list.d/cri-o.list
 
 apt-get update -y
 apt-get install -y cri-o
@@ -83,6 +82,6 @@ mkdir -p /opt/cni/bin
 tar Cxzvf /opt/cni/bin cni-plugins-linux-${CNI_ARCH}-v1.7.1.tgz
 
 apt-get update -y
-apt-get install -y kubelet="$KUBERNETES_INSTALL_VERSION" kubectl="$KUBERNETES_INSTALL_VERSION" kubeadm="$KUBERNETES_INSTALL_VERSION"
+apt-get install -y kubelet kubeadm
 
 kubeadm config images pull --cri-socket=/var/run/crio/crio.sock

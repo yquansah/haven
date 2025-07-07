@@ -76,12 +76,23 @@
         state: directory
         mode: '0755'
     
+    - name: remove_old_crio_repository_key
+      file:
+        path: /etc/apt/keyrings/cri-o-apt-keyring.gpg
+        state: absent
+      
+    - name: remove_old_crio_repository
+      file:
+        path: /etc/apt/sources.list.d/cri-o.list
+        state: absent
+      
     - name: add_crio_repository_key
       shell: |
         curl -fsSL https://download.opensuse.org/repositories/isv:/cri-o:/stable:/{{ crio_version }}/deb/Release.key | 
         gpg --batch --yes --dearmor -o /etc/apt/keyrings/cri-o-apt-keyring.gpg
-      args:
-        creates: /etc/apt/keyrings/cri-o-apt-keyring.gpg
+        chmod 644 /etc/apt/keyrings/cri-o-apt-keyring.gpg
+      retries: 3
+      delay: 10
     
     - name: add_crio_repository
       apt_repository:
@@ -122,12 +133,13 @@
         mode: '0755'
     
     - name: install_cni_plugins
-      unarchive:
-        src: "https://github.com/containernetworking/plugins/releases/download/{{ cni_plugins_version }}/cni-plugins-linux-{{ cni_arch }}-{{ cni_plugins_version }}.tgz"
-        dest: /opt/cni/bin
-        remote_src: yes
+      shell: |
+        cd /tmp
+        curl -L -o cni-plugins.tgz "https://github.com/containernetworking/plugins/releases/download/{{ cni_plugins_version }}/cni-plugins-linux-{{ cni_arch }}-{{ cni_plugins_version }}.tgz"
+        tar -xzf cni-plugins.tgz -C /opt/cni/bin/
+        rm -f cni-plugins.tgz
+      args:
         creates: /opt/cni/bin/loopback
-        mode: '0755'
     
     - name: install_kubernetes_tools
       apt:

@@ -1,17 +1,19 @@
-{{- if .Values.externalSecrets.enabled }}
+{{- if .Values.traefik.enabled }}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: {{ .Values.externalSecrets.name }}
+  name: {{ .Values.traefik.name }}
   namespace: argocd
 spec:
   project: default
   source:
-    chart: external-secrets
-    repoURL: https://charts.external-secrets.io/ 
-    targetRevision: {{ .Values.externalSecrets.chartVersion }}
+    chart: traefik
+    repoURL: https://grafana.github.io/helm-charts
+    targetRevision: {{ .Values.traefik.chartVersion }}
     helm:
-      releaseName: {{ .Values.externalSecrets.releaseName }}
+      releaseName: {{ .Values.traefik.releaseName }}
+      valuesObject:
+        {{- .Values.traefik.values | toYaml | nindent 8 }}
   destination:
     name: in-cluster
     namespace: {{ .Values.namespace }}

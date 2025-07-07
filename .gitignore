@@ -33,3 +33,6 @@ PLAN
 
 # Alloy files
 *.alloy
+
+# Kubernetes related files
+kubeconfig

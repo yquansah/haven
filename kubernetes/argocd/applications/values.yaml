@@ -1,4 +1,5 @@
 clusterMetrics:
+  enabled: false
   name: cluster-metrics
   namespace: monitoring
   chartVersion: 3.0.2
@@ -33,7 +34,15 @@ clusterMetrics:
       enabled: true
   
 externalSecrets:
+  enabled: true
   name: external-secrets
   releaseName: external-secrets
   namespace: external-secrets
   chartVersion: 0.18.0
+
+traefik:
+  enabled: true
+  name: traefik
+  releaseName: yke-traefik
+  namespace: traefik
+  chartVersion: 34.5.0

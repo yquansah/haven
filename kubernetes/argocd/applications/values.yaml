@@ -46,3 +46,6 @@ traefik:
   releaseName: yke-traefik
   namespace: traefik
   chartVersion: 34.5.0
+  values:
+    service:
+      type: NodePort

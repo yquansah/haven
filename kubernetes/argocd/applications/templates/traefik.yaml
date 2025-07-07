@@ -8,7 +8,7 @@ spec:
   project: default
   source:
     chart: traefik
-    repoURL: https://grafana.github.io/helm-charts
+    repoURL: https://traefik.github.io/charts
     targetRevision: {{ .Values.traefik.chartVersion }}
     helm:
       releaseName: {{ .Values.traefik.releaseName }}

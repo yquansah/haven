@@ -206,8 +206,6 @@ resource "aws_instance" "yke_control_plane" {
 
   vpc_security_group_ids = [aws_security_group.yke_control_plane_sg.id]
 
-  user_data = file("scripts/init.yaml")
-
   tags = {
     Name      = "yke-control-plane-0"
     Component = "control-plane-node"

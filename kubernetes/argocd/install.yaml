@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: yke-cluster-software
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io/foreground
+spec:
+  project: default
+  source:
+    repoURL: "https://github.com/yquansah/haven.git"
+    path: kubernetes/argocd/applications
+    targetRevision: main
+    helm:
+      valueFiles:
+        - values.yaml
+  destination:
+    name: in-cluster
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      allowEmpty: true
+      selfHeal: true

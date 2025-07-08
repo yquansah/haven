@@ -16,7 +16,7 @@ spec:
         {{- .Values.traefik.values | toYaml | nindent 8 }}
   destination:
     name: in-cluster
-    namespace: {{ .Values.namespace }}
+    namespace: {{ .Values.traefik.namespace }}
   syncPolicy:
     automated:
       prune: true

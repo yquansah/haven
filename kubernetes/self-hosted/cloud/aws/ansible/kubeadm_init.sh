@@ -63,7 +63,6 @@ sudo kubeadm init \
 
 # Set up kubeconfig for ubuntu user
 mkdir -p /home/ubuntu/.kube
-rm /home/ubuntu/.kube/config
 sudo cp -i /etc/kubernetes/admin.conf /home/ubuntu/.kube/config
 sudo chown ubuntu:ubuntu /home/ubuntu/.kube/config
 

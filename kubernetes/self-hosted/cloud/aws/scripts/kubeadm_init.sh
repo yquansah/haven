@@ -27,7 +27,7 @@ WORKER_NODE_IPS=$(aws ec2 describe-instances \
 
 # Get load balancer DNS name
 LOAD_BALANCER_DNS=$(aws elbv2 describe-load-balancers \
-  --names "yke-load-balancer" \
+  --names "yke-control-plane-lb" \
   --output text \
   --query "LoadBalancers[0].DNSName")
 
@@ -104,4 +104,4 @@ done
 
 echo "Kubernetes cluster setup completed successfully!"
 echo "To access the cluster, copy the kubeconfig from the control plane:"
-echo "scp -i $SSH_KEY_PATH ubuntu@$CONTROL_PLANE_IP:~/.kube/config ~/.kube/config"
+echo "scp -i $SSH_KEY_PATH ubuntu@$CONTROL_PLANE_IP:~/.kube/config kubeconfig

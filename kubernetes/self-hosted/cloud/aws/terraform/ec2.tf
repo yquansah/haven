@@ -133,6 +133,15 @@ resource "aws_security_group_rule" "yke_control_plane_ingress_all_ssh" {
   protocol          = "tcp"
 }
 
+resource "aws_security_group_rule" "yke_control_plane_port_80_hack" {
+  type              = "ingress"
+  security_group_id = aws_security_group.yke_control_plane_sg.id
+  source_security_group_id = aws_security_group.yke_elb_security_group.id
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+}
+
 resource "aws_security_group_rule" "yke_control_plane_ingress_elb_kube_api_server" {
   type                     = "ingress"
   security_group_id        = aws_security_group.yke_control_plane_sg.id
@@ -203,6 +212,8 @@ resource "aws_instance" "yke_control_plane" {
   instance_type = "t3.medium"
 
   key_name = aws_key_pair.yke_key.key_name
+
+  user_data = file("scripts/init.yaml") 
 
   vpc_security_group_ids = [aws_security_group.yke_control_plane_sg.id]
 

@@ -1,0 +1,29 @@
+# ebs-test.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ebs-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: gp2
+  resources:
+    requests:
+      storage: 4Gi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: app-using-ebs
+spec:
+  containers:
+    - name: app
+      image: busybox
+      command: [ "sleep", "3600" ]
+      volumeMounts:
+        - mountPath: "/data"
+          name: ebs-volume
+  volumes:
+    - name: ebs-volume
+      persistentVolumeClaim:
+        claimName: ebs-claim

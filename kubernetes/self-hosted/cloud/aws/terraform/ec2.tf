@@ -233,6 +233,8 @@ resource "aws_instance" "yke_worker_node" {
 
   key_name = aws_key_pair.yke_key.key_name
 
+  iam_instance_profile = aws_iam_instance_profile.yke_ebs_csi_volume_instance_profile.name
+
   vpc_security_group_ids = [aws_security_group.yke_worker_node_sg.id]
 
   tags = {

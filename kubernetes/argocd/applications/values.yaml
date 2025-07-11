@@ -35,17 +35,21 @@ clusterMetrics:
   
 externalSecrets:
   enabled: true
-  name: external-secrets
-  releaseName: external-secrets
-  namespace: external-secrets
-  chartVersion: 0.18.0
 
 traefik:
   enabled: true
-  name: traefik
-  releaseName: yke-traefik
-  namespace: traefik
-  chartVersion: 34.5.0
-  values:
-    service:
-      type: NodePort
+
+# AWS-specific applications
+aws:
+  ebsCsiDriver:
+    enabled: false
+    namespace: kube-system
+    chartVersion: 2.45.1
+
+# GCP-specific applications
+gcp:
+  computePersistentDiskCsi:
+    enabled: false
+    name: gcp-compute-persistent-disk-csi-driver
+    namespace: kube-system
+    chartVersion: 1.9.0

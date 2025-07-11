@@ -2,21 +2,22 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: {{ .Values.traefik.name }}
+  name: traefik
   namespace: argocd
 spec:
   project: default
   source:
     chart: traefik
     repoURL: https://traefik.github.io/charts
-    targetRevision: {{ .Values.traefik.chartVersion }}
+    targetRevision: 34.5.0
     helm:
-      releaseName: {{ .Values.traefik.releaseName }}
+      releaseName: yke-traefik
       valuesObject:
-        {{- .Values.traefik.values | toYaml | nindent 8 }}
+        service:
+          type: NodePort
   destination:
     name: in-cluster
-    namespace: {{ .Values.traefik.namespace }}
+    namespace: traefik
   syncPolicy:
     automated:
       prune: true

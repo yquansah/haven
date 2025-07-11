@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: yke-cluster-software
+  name: yke-cluster-software-gcp
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io/foreground
@@ -12,6 +12,8 @@ spec:
     path: kubernetes/argocd/applications
     targetRevision: main
     helm:
+      valuesObject:
+        provider: gcp
       valueFiles:
         - values.yaml
   destination:

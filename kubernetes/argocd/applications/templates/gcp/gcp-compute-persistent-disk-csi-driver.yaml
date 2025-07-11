@@ -1,0 +1,36 @@
+{{- if and (eq .Values.provider "gcp") .Values.gcp.computePersistentDiskCsi.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Values.gcp.computePersistentDiskCsi.name }}
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: gcp-compute-persistent-disk-csi-driver
+    repoURL: https://kubernetes-sigs.github.io/gcp-compute-persistent-disk-csi-driver
+    targetRevision: {{ .Values.gcp.computePersistentDiskCsi.chartVersion }}
+    helm:
+      releaseName: {{ .Values.gcp.computePersistentDiskCsi.name }}
+      values: |
+        controller:
+          serviceAccount:
+            create: true
+            name: csi-gce-pd-controller-sa
+        node:
+          serviceAccount:
+            create: true
+            name: csi-gce-pd-node-sa
+  destination:
+    name: in-cluster
+    namespace: {{ .Values.gcp.computePersistentDiskCsi.namespace }}
+  syncPolicy:
+    automated:
+      prune: true
+      allowEmpty: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PruneLast=true
+      - ApplyOutOfSyncOnly=true
+{{- end }}

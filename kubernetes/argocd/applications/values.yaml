@@ -39,6 +39,9 @@ externalSecrets:
 traefik:
   enabled: true
 
+certManager:
+  enabled: true
+
 # AWS-specific applications
 aws:
   ebsCsiDriver:

@@ -79,6 +79,15 @@ resource "aws_security_group_rule" "yke_worker_node_egress_all" {
   to_port           = 0
 }
 
+resource "aws_security_group_rule" "yke_worker_node_ingress_traefik_ingress" {
+  type              = "ingress"
+  security_group_id = aws_security_group.yke_worker_node_sg.id
+  source_security_group_id = aws_security_group.yke_elb_traefik_ingress_security_group.id
+  from_port         = 30000
+  to_port           = 32767
+  protocol          = "tcp"
+}
+
 resource "aws_security_group" "yke_control_plane_sg" {
   name   = "yke-control-plane-sg"
   vpc_id = aws_vpc.yke_vpc.id

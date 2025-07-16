@@ -34,19 +34,19 @@ spec:
   selector:
     app: echoserver
 ---
-# apiVersion: traefik.io/v1alpha1
-# kind: IngressRoute
-# metadata:
-#   name: echoserver-ingress-route
-# spec:
-#   entryPoints:
-#     - web
-#   routes:
-#   - kind: Rule
-#     match: Host(`yoofionline.com`)
-#     services:
-#     - name: echoserver
-#       namespace: default
-#       port: 80
-#   tls:
-#     secretName: yoofionline-tls
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: echoserver-ingress-route
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - kind: Rule
+    match: Host(`yoofionline.com`)
+    services:
+    - name: echoserver
+      namespace: default
+      port: 80
+  tls:
+    secretName: yoofionline-tls

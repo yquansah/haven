@@ -42,6 +42,11 @@ traefik:
 certManager:
   enabled: true
 
+datadog:
+  agent:
+    apiKey: ""
+    site: ""
+
 # AWS-specific applications
 aws:
   ebsCsiDriver:

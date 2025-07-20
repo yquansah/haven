@@ -104,4 +104,4 @@ done
 
 echo "Kubernetes cluster setup completed successfully!"
 echo "To access the cluster, copy the kubeconfig from the control plane:"
-echo "scp -i $SSH_KEY_PATH ubuntu@$CONTROL_PLANE_IP:~/.kube/config kubeconfig
+echo "scp -i $SSH_KEY_PATH ubuntu@$CONTROL_PLANE_IP:~/.kube/config kubeconfig"

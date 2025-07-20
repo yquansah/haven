@@ -1,0 +1,46 @@
+{{- if .Values.datadog.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: datadog-agent
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  project: default
+  source:
+    chart: datadog
+    repoURL: https://helm.datadoghq.com
+    targetRevision: 3.123.2
+    helm:
+      releaseName: yke-datadog-agent
+      valuesObject:
+        env:
+          - name: DD_HOSTNAME
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+        datadog:
+          site: {{ .Values.datadog.agent.site }}
+          apiKey: {{ .Values.datadog.agent.apiKey }} 
+          kubelet:
+            tlsVerify: false
+          logs:
+            enabled: true
+            containerCollectAll: true
+        apm:
+          instrumentation:
+            enabled: true
+  destination:
+    name: in-cluster
+    namespace: datadog
+  syncPolicy:
+    automated:
+      prune: true
+      allowEmpty: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PruneLast=true
+      - ApplyOutOfSyncOnly=true
+{{- end }}

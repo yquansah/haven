@@ -43,6 +43,7 @@ certManager:
   enabled: true
 
 datadog:
+  enabled: false
   agent:
     apiKey: ""
     site: ""

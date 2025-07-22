@@ -1,0 +1,16 @@
+gateway:
+  listeners:
+    websecure:
+      port: 8443
+      protocol: HTTPS
+      namespacePolicy: All
+      mode: Terminate
+      certificateRefs:
+        - name: yoofionline-tls
+          namespace: default
+providers:
+  kubernetesIngress:
+    enabled: false
+  kubernetesGateway:
+    enabled: true
+

@@ -13,6 +13,8 @@ spec:
     helm:
       releaseName: yke-cert-manager
       valuesObject:
+        extraArgs:
+          - --enable-gateway-api
         crds:
           enabled: true
   destination:

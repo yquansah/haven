@@ -30,24 +30,24 @@ spec:
   usages:
   - digital signature
   - key encipherment
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: yoofionline-ingress
-spec:
-  rules:
-    - host: yoofionline.com
-      http:
-        paths:
-          - path: /
-            pathType: Exact
-            backend:
-              service:
-                name: echoserver
-                port:
-                  number: 80
-  tls:
-    - hosts:
-        - yoofionline.com
-      secretName: yoofionline-tls
+# ---
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: yoofionline-ingress
+# spec:
+#   rules:
+#     - host: yoofionline.com
+#       http:
+#         paths:
+#           - path: /
+#             pathType: Exact
+#             backend:
+#               service:
+#                 name: echoserver
+#                 port:
+#                   number: 80
+#   tls:
+#     - hosts:
+#         - yoofionline.com
+#       secretName: yoofionline-tls

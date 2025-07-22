@@ -5,6 +5,7 @@ AWS_TERRAFORM_DIR = self-hosted/cloud/aws/terraform
 AWS_SCRIPTS_DIR = self-hosted/cloud/aws/scripts
 GCP_TERRAFORM_DIR = self-hosted/cloud/gcp/terraform
 GCP_SCRIPTS_DIR = self-hosted/cloud/gcp/scripts
+KUBERNETES_SCRIPTS_DIR = useful/scripts
 
 # Default target
 .PHONY: help
@@ -30,6 +31,9 @@ help:
 	@echo "  gcp-clean              - Clean up generated files"
 	@echo "  gcp-deploy             - Complete GCP deployment workflow"
 	@echo "  gcp-setup              - GCP setup workflow (init + plan)"
+	@echo ""
+	@echo "Available Kubernetes Components targets:"
+	@echo "  install-kubernetes-startup-components - Install ArgoCD and Gateway API"
 
 # Terraform targets
 .PHONY: aws-terraform-init
@@ -131,4 +135,10 @@ gcp-deploy: gcp-terraform-apply gcp-ansible-setup gcp-kubeadm-init
 
 .PHONY: gcp-setup
 gcp-setup: gcp-terraform-init gcp-terraform-plan
-	@echo "GCP setup complete - ready for terraform apply" 
+	@echo "GCP setup complete - ready for terraform apply"
+
+# Kubernetes Components targets
+.PHONY: install-kubernetes-startup-components
+install-kubernetes-startup-components:
+	@echo "Installing Kubernetes startup components..."
+	cd $(KUBERNETES_SCRIPTS_DIR) && ./install-kubernetes-startup-components.sh 
